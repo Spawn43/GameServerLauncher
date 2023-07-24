@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using GameServerLauncher.Data;
 using GameServerLauncher;
 using GameServerLauncher.Services;
-
+using GameServerLauncher.DbConnections;
+using GameServerLauncher.Repository;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,8 +11,12 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<INetworkService, NetworkService>();
 builder.Services.AddSingleton<IRamService, RamService>();
 builder.Services.AddSingleton<ICPUService, CPUService>();
+builder.Services.AddTransient<IServerStatisticRepository, ServerStatisticsRepository>();
 
-builder.Services.AddHostedService<ServerStatisticService>();
+string connectionString = builder.Configuration.GetConnectionString("Defaultconnection");
+builder.Services.AddSingleton<ISQLDbConnection>(provider => new SQLDbConnection(connectionString));
+
+builder.Services.AddHostedService<ServerStatisticBackgroundService>();
 
 
 
@@ -21,10 +25,6 @@ builder.Services.AddHostedService<ServerStatisticService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
 
 var app = builder.Build();
 

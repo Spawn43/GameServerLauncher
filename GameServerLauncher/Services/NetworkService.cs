@@ -10,8 +10,8 @@ namespace GameServerLauncher.Services
     public class NetworkService : INetworkService
     {
 
-        long previousbytessend = 0;
-        long previousbytesreceived = 0;
+        public long previousbytessend = 0;
+        public long previousbytesreceived = 0;
 
 
         IPv4InterfaceStatistics interfaceStats;     
